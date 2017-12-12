@@ -9,7 +9,7 @@ TAnalytics::Event("WeaponClicked", "RocketLauncher");
 TAnalytics::Event("MapStarted", "SinglePlayer", "MapName.map");
 
 Original authors:
-Mihai Dragomir, email:dmc@pixelshard.com
-Mihai Gosa, email:pintea@inthekillhouse.com  twitter: @gosamihai
+Mihai Dragomir - dmc@pixelshard.com
+Mihai Gosa - pintea@inthekillhouse.com or @gosamihai on twitter
 
 License: MIT
