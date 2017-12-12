@@ -38,7 +38,7 @@ bool TAnalytics::Init(const char* trackingId, const char* uniqueClientId)
 	if (!m_pMultiHandle)
 		return false;
 
-    sprintf(m_strServicePath, "http://www.google-analytics.com/collect?v=1&tid=%s&cid=%s", trackingId, uniqueClientId);
+	sprintf(m_strServicePath, "http://www.google-analytics.com/collect?v=1&tid=%s&cid=%s", trackingId, uniqueClientId);
 	return true;
 }
 
