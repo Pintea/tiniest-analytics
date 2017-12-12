@@ -1,20 +1,16 @@
 # tiniest-analytics
-VERY simple cross-platform C++ analytics for games (using Google Analytics)
+Tiniest Analytics is VERY simple to use, cross-platform (tested on win/osx/linux/ios/android) and basically *very tiny* analytics system written in C++ (about 100 lines of code). It uses libcurl to post events to your Google Analytics account.
+<br />
 
-Tiniest Analytics is a multi-platform (tested on win/osx/linux/ios/android), very simple to use and basically *very tiny* analytics system written in C++ (about 100 lines of code). It uses libcurl to post events on your Google Analytics account.
-
-There's only one function to use, e.g.
-
-TAnalytics::Event("GameStart", "linux");
-
-TAnalytics::Event("WeaponClicked", "RocketLauncher");
-
-TAnalytics::Event("MapStarted", "SinglePlayer", "MapName.map");
+<br />
+There's only one function to use, e.g.<br />
+TAnalytics::Event("GameStart", "linux");<br />
+TAnalytics::Event("WeaponClicked", "RocketLauncher");<br />
+TAnalytics::Event("MapStarted", "SinglePlayer", "MapName.map");<br />
 
 
-Original authors:
-Mihai Dragomir - dmc@pixelshard.com
-
-Mihai Gosa - pintea@inthekillhouse.com or @gosamihai on twitter
-
+Original authors:<br />
+Mihai Dragomir - dmc@pixelshard.com<br />
+Mihai Gosa - pintea@inthekillhouse.com or @gosamihai on twitter<br />
+<br />
 License: MIT
