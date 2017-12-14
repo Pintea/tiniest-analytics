@@ -10,11 +10,11 @@ TAnalytics::Event("WeaponClicked", "RocketLauncher");<br />
 TAnalytics::Event("MapStarted", "SinglePlayer", "MapName.map");<br />
 <br />
 <br />
-![alt text](https://user-images.githubusercontent.com/292486/33986464-4f0b6000-e0c6-11e7-83fe-790486ef7685.jpg)
+![alt text](https://user-images.githubusercontent.com/292486/33986723-206b0bc8-e0c7-11e7-9ac9-8f4f841385ed.jpg)
 <br />
-![alt text](https://user-images.githubusercontent.com/292486/33986467-4f4974b2-e0c6-11e7-9cc4-56922337432e.jpg)
+![alt text](https://user-images.githubusercontent.com/292486/33986724-20895b32-e0c7-11e7-8114-b203803867e4.jpg)
 <br />
-![alt text](https://user-images.githubusercontent.com/292486/33986466-4f2c4f18-e0c6-11e7-9c87-25fdf8e13420.jpg)
+![alt text](https://user-images.githubusercontent.com/292486/33986722-204d395e-e0c7-11e7-8d1d-4f73cfcb577a.jpg)
 <br />
 <br />
 Original authors:<br />
