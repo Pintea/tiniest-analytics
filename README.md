@@ -22,6 +22,7 @@ TAnalytics::Event("MapStarted", "SinglePlayer", "MapName.map");<br />
 Original authors:<br />
 Mihai Dragomir - dmc@pixelshard.com<br />
 Mihai Gosa - pintea@inthekillhouse.com or @gosamihai on twitter<br />
+Initially developed for the 'Door Kickers' games.<br />
 <br />
 <br />
 License: MIT
