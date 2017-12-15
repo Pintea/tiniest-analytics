@@ -1,5 +1,5 @@
 # tiniest-analytics
-Tiniest Analytics is a *very* simple to use, cross-platform (tested on win/osx/linux/ios/android) and basically *very tiny* analytics system written in C++ (about 100 lines of code), made specifically for games. It uses libcurl to post events to your Google Analytics account.
+Tiniest Analytics is a *very* simple to use, cross-platform (tested on win/osx/linux/ios/android) and basically *very tiny* analytics system written in C++ (less than 100 lines of code), made specifically for games. It uses libcurl to post events to your Google Analytics account.
 <br />
 <br />
 Usage: include TAnalytics.h, call Init("UA-12345678-1", uniqueId) before using and Shutdown() when closing your app, and Update() each frame. You also need libcurl in your project (no ssl needed).
