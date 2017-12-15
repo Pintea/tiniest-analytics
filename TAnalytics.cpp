@@ -10,7 +10,7 @@ Mihai Gosa, email:pintea@inthekillhouse.com  twitter: @gosamihai
 
 */
 
-#include "Analytics.h"
+#include "TAnalytics.h"
 #include "curl/curl.h"
 #include <stdlib.h>
 #include <stdio.h>
