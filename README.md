@@ -21,7 +21,7 @@ TAnalytics_Event("MapStarted", "SinglePlayer", "MapName.map");<br />
 <br />
 Original authors:<br />
 Mihai Dragomir - dmc@pixelshard.com<br />
-Mihai Gosa - pintea@inthekillhouse.com or @gosamihai on twitter<br />
+Mihai Gosa (Pintea) - pintea@inthekillhouse.com or @gosamihai on twitter<br />
 Initially developed for the 'Door Kickers' games.<br />
 <br />
 <br />
