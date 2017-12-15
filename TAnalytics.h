@@ -1,5 +1,8 @@
 /*
-Tiniest Analytics - v1.0 - public domain
+Tiniest Analytics - v1.1 - MIT License (i.e. can use it for whatever purpose)
+
+Version history:
+v1.1 - 2017/12/15 - changed to C-style C++
 
 Original authors:
 Mihai Dragomir, email:dmc@pixelshard.com
@@ -7,42 +10,25 @@ Mihai Gosa, email:pintea@inthekillhouse.com  twitter: @gosamihai
 
 */
 
-#pragma once
+#ifndef INCLUDE_TANALYTICS_H
+#define INCLUDE_TANALYTICS_H
 
-class TAnalytics
-{
-private:
-	TAnalytics();
-public:
-	static TAnalytics& GetInstance();
-	~TAnalytics();
+// 'uniqueClientId' should be unique for each user, e.g. the Steam UID or a randomly generated 32/64bit value
+// e.g. Init("UA-12345678-1", steamClientId)
+bool TAnalytics_Init(const char* trackingId, const char* uniqueClientId);
 
-	// usage: Init("UA-12345678-1", steamClientId)
-	bool	Init(const char* trackingId, const char* uniqueClientId); // uniqueClientId should be unique for each user, e.g. the Steam UID
+// call when exiting app
+void TAnalytics_Shutdown();
 
-	void	Shutdown();
+// call at most once per frame
+void TAnalytics_Update();
 
-	// read this https://support.google.com/analytics/answer/1033068?hl=en
-	// e.g. Event("GameStart", "linux")
-	// e.g. Event("WeaponClicked", "RocketLauncher")
-	// e.g. Event("MapStarted", "SinglePlayer", "MapName.map")
-	void	Event(const char* category, const char* action);
-	void	Event(const char* category, const char* action, const char* label);
-	void	Event(const char* category, const char* action, const char* label, unsigned int value);
+// read this https://support.google.com/analytics/answer/1033068?hl=en
+// e.g. Event("GameStart", "linux")
+// e.g. Event("WeaponClicked", "RocketLauncher")
+// e.g. Event("MapStarted", "SinglePlayer", "MapName.map")
+void TAnalytics_Event(const char* category, const char* action);
+void TAnalytics_Event(const char* category, const char* action, const char* label);
+void TAnalytics_Event(const char* category, const char* action, const char* label, unsigned int value);
 
-	// call once per frame
-	void	Update();
-
-private:
-	bool	ExecuteCurlURL(const char* url, ...);
-
-private:
-	static TAnalytics m_instance;
-	void*	m_pMultiHandle; // actually a CURLM*, but don't include curl.h here
-	char	m_strServicePath[2048]; // includes clientID and trackingID
-};
-
-// helpers
-inline void ANALYTICS_EVENT(const char* category, const char* action)											{ TAnalytics::GetInstance().Event(category, action); }
-inline void ANALYTICS_EVENT(const char* category, const char* action, const char* label)						{ TAnalytics::GetInstance().Event(category, action, label); }
-inline void ANALYTICS_EVENT(const char* category, const char* action, const char* label, unsigned int value)	{ TAnalytics::GetInstance().Event(category, action, label, value); }
+#endif

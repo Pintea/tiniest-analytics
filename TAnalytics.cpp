@@ -1,5 +1,8 @@
 /*
-Tiniest Analytics - v1.0 - public domain
+Tiniest Analytics - v1.1 - MIT License (i.e. can use it for whatever purpose)
+
+Version history:
+v1.1 - 2017/12/15 - changed to C-style C++
 
 Original authors:
 Mihai Dragomir, email:dmc@pixelshard.com
@@ -7,63 +10,29 @@ Mihai Gosa, email:pintea@inthekillhouse.com  twitter: @gosamihai
 
 */
 
-#include "TAnalytics.h"
+#include "Analytics.h"
 #include "curl/curl.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <assert.h>
 
-TAnalytics TAnalytics::m_instance;
-TAnalytics& TAnalytics::GetInstance()
-{
-	return m_instance;
-}
+static CURLM* g_pMultiHandle = NULL; // actually a CURLM*, but don't include curl.h here
+static char g_strServicePath[2048] = {'\0'}; // includes clientID and trackingID
 
-TAnalytics::TAnalytics()
-{
-	m_pMultiHandle = NULL;
-	m_strServicePath[0] = '\0';
-}
-
-TAnalytics::~TAnalytics()
-{
-	Shutdown();
-}
-
-bool TAnalytics::Init(const char* trackingId, const char* uniqueClientId)
-{
-	curl_global_init(CURL_GLOBAL_ALL);
-	m_pMultiHandle = curl_multi_init();
-	if (!m_pMultiHandle)
-		return false;
-
-	sprintf(m_strServicePath, "http://www.google-analytics.com/collect?v=1&tid=%s&cid=%s", trackingId, uniqueClientId);
-	return true;
-}
-
-void TAnalytics::Shutdown()
-{
-	if (!m_pMultiHandle)
-		return;
-
-	Update(); // one last update to remove handles from stack if they're ready
-	curl_multi_cleanup((CURLM*)m_pMultiHandle);
-	m_pMultiHandle = NULL;
-}
-
+// utility function, used to replace spaces with pluses for URLs
 static void ReplaceStrChar(char *s, const int len, const char what, const char with)
 {
-	for (int i = 0; i < len; ++i)
-	{
+	for (int i = 0; i < len; ++i) {
 		if (s[i] == what)
 			s[i] = with;
 	}
 }
 
-bool TAnalytics::ExecuteCurlURL(const char* url, ...)
+// utility function, used to send the HTTP get
+static bool ExecuteCurlURL(const char* url, ...)
 {
-	if (!m_pMultiHandle)
+	if (!g_pMultiHandle)
 		return false;
 
 	va_list argptr;
@@ -78,51 +47,70 @@ bool TAnalytics::ExecuteCurlURL(const char* url, ...)
 	curl_easy_setopt(pCurlHandle, CURLOPT_URL, strAddr);
 	curl_easy_setopt(pCurlHandle, CURLOPT_FOLLOWLOCATION, 1L);
 	curl_easy_setopt(pCurlHandle, CURLOPT_TIMEOUT, 20);
-	CURLMcode result = curl_multi_add_handle((CURLM*)m_pMultiHandle, pCurlHandle);
+	CURLMcode result = curl_multi_add_handle(g_pMultiHandle, pCurlHandle);
 	return (result == CURLM_OK);
 }
 
-void TAnalytics::Event(const char* category, const char* action, const char* label, unsigned int value)
+bool TAnalytics_Init(const char* trackingId, const char* uniqueClientId)
 {
-	ExecuteCurlURL("%s&t=event&ec=%s&ea=%s&el=%s&ev=%u&z=%d", m_strServicePath, category, action, label, value, rand());
+	curl_global_init(CURL_GLOBAL_ALL);
+	g_pMultiHandle = curl_multi_init();
+	if (!g_pMultiHandle)
+		return false;
+
+	sprintf(g_strServicePath, "http://www.google-analytics.com/collect?v=1&tid=%s&cid=%s", trackingId, uniqueClientId);
+	return true;
 }
 
-void TAnalytics::Event(const char* category, const char* action, const char* label)
+void TAnalytics_Shutdown()
 {
-	ExecuteCurlURL("%s&t=event&ec=%s&ea=%s&el=%s&z=%d", m_strServicePath, category, action, label, rand());
+	if (!g_pMultiHandle)
+		return;
+
+	TAnalytics_Update(); // one last update to remove handles from stack if they're ready
+	curl_multi_cleanup(g_pMultiHandle);
+	g_pMultiHandle = NULL;
 }
 
-void TAnalytics::Event(const char* category, const char* action)
+void TAnalytics_Event(const char* category, const char* action, const char* label, unsigned int value)
 {
-	ExecuteCurlURL("%s&t=event&ec=%s&ea=%s&z=%d", m_strServicePath, category, action, rand());
+	ExecuteCurlURL("%s&t=event&ec=%s&ea=%s&el=%s&ev=%u&z=%d", g_strServicePath, category, action, label, value, rand());
 }
 
-void TAnalytics::Update()
+void TAnalytics_Event(const char* category, const char* action, const char* label)
 {
-	if (!m_pMultiHandle)
+	ExecuteCurlURL("%s&t=event&ec=%s&ea=%s&el=%s&z=%d", g_strServicePath, category, action, label, rand());
+}
+
+void TAnalytics_Event(const char* category, const char* action)
+{
+	ExecuteCurlURL("%s&t=event&ec=%s&ea=%s&z=%d", g_strServicePath, category, action, rand());
+}
+
+void TAnalytics_Update()
+{
+	if (!g_pMultiHandle)
 		return;
 
 	int stillRunning = 0;
-	curl_multi_perform((CURLM*)m_pMultiHandle, &stillRunning);
+	curl_multi_perform(g_pMultiHandle, &stillRunning);
 
 	CURLMsg* pMsg = NULL;
 	do {
 		int msgsInQueue = 0;
-		pMsg = curl_multi_info_read((CURLM*)m_pMultiHandle, &msgsInQueue);
-		if(pMsg && (pMsg->msg == CURLMSG_DONE))
-		{
+		pMsg = curl_multi_info_read(g_pMultiHandle, &msgsInQueue);
+		if(pMsg && (pMsg->msg == CURLMSG_DONE)) {
 			long response_code;
 			curl_easy_getinfo(pMsg->easy_handle, CURLINFO_RESPONSE_CODE, &response_code);
-			if (response_code != 200)
-			{
+			if (response_code != 200) {
 				const char *urlp;
 				curl_easy_getinfo(pMsg->easy_handle, CURLINFO_EFFECTIVE_URL, &urlp);
 
 				char strerr[2048];
-				sprintf(strerr, "[Error] TAnalytics::Update() failed for URL '%s' with error %ld\n", urlp ? urlp : "?", response_code);
+				sprintf(strerr, "[Error] Update() failed for URL '%s' with error %ld\n", urlp ? urlp : "?", response_code);
 				assert(response_code == 200 && strerr);
 			}
-			curl_multi_remove_handle((CURLM*)m_pMultiHandle, pMsg->easy_handle);
+			curl_multi_remove_handle(g_pMultiHandle, pMsg->easy_handle);
 			curl_easy_cleanup(pMsg->easy_handle);
 		}
 	} while (pMsg);
