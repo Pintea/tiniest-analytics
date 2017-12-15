@@ -17,8 +17,8 @@ Mihai Gosa, email:pintea@inthekillhouse.com  twitter: @gosamihai
 #include <stdarg.h>
 #include <assert.h>
 
-static CURLM* g_pMultiHandle = NULL; // actually a CURLM*, but don't include curl.h here
-static char g_strServicePath[2048] = {'\0'}; // includes clientID and trackingID
+static CURLM* g_pMultiHandle = NULL;
+static char g_strServicePath[2048] = {'\0'}; // caches clientID and trackingID after calling Init() (http://www.google-analytics.com/collect?v=1&tid=%s&cid=%s)
 
 // utility function, used to replace spaces with pluses for URLs
 static void ReplaceStrChar(char *s, const int len, const char what, const char with)
@@ -107,7 +107,7 @@ void TAnalytics_Update()
 				curl_easy_getinfo(pMsg->easy_handle, CURLINFO_EFFECTIVE_URL, &urlp);
 
 				char strerr[2048];
-				sprintf(strerr, "[Error] Update() failed for URL '%s' with error %ld\n", urlp ? urlp : "?", response_code);
+				sprintf(strerr, "[Error] TAnalytics_Update() failed for URL '%s' with error %ld\n", urlp ? urlp : "?", response_code);
 				assert(response_code == 200 && strerr);
 			}
 			curl_multi_remove_handle(g_pMultiHandle, pMsg->easy_handle);
