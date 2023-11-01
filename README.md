@@ -1,4 +1,7 @@
 # tiniest-analytics
+
+IMPORTANT NOTE: CURRENT CODE NO LONGER WORKS FOR GOOGLE ANALYTICS 4, BECAUSE GA4 DOESN'T ACCEPT NON-HTTPS REQUESTS.
+
 Tiniest Analytics is a *very* simple to use, cross-platform (tested on win/osx/linux/ios/android) and basically *very tiny* analytics system written in C++ (less than 100 lines of code), made specifically for games. It uses libcurl to post events to your Google Analytics account.
 <br />
 <br />
